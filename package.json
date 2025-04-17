@@ -9,6 +9,7 @@
   "author": "Sam",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.2.6",
     "async-lock": "^1.4.1",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"

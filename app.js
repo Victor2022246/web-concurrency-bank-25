@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require("mongoose");
+const {Mutex} = require ("mutex");
 
 const app = express();
 const PORT = 3000;
+const accountMutex = new Mutex(); 
 
 mongoose.connect('mongodb://127.0.0.1:27017/bank');
 
@@ -25,11 +27,13 @@ Account.findById(1)
 
 // Function to simulate a race condition by directly manipulating account balance without synchronization
 async function handleDeposit(amount) {
+    await accountMutex.runExclusive(async () => {
     console.log(`Depositing $${amount}`);
     let account = await Account.findOne({ "_id": 1 });
     account.balance += amount;
     console.log(account.balance);
     account.save();
+});
 }
 
 async function handleWithdrawal(amount) {
@@ -41,6 +45,7 @@ async function handleWithdrawal(amount) {
 }
 
 // Deposit route
+// eg http://localhost:3000/deposit?amount=100
 app.get('/deposit', async (req, res) => {
     const amount = parseInt(req.query.amount, 10) || 0;
     // Simulate a race condition by directly modifying the balance without synchronization
