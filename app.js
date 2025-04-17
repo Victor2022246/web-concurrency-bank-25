@@ -62,7 +62,8 @@ app.get('/withdraw', async (req, res) => {
 });
 
 app.get('/balance', async (req, res) => {
-    res.send(`Current balance: $${accountBalance}`);
+    let account = await Account.findOne({ "_id": 1 });
+    res.send(`Current balance: $${account.balance}`);
 })
 
 // Start the server
